@@ -5,9 +5,10 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { AdditiveBlending } from "three";
 import { Planet } from "./Planet";
-import { planets, type PlanetInfo } from "@/data/planets";
+import { type PlanetInfo } from "@/data/planets";
 
 type SolarSystemSceneProps = {
+  planets: PlanetInfo[];
   onSelectPlanet: (planet: PlanetInfo) => void;
   timeScale: number;
   focusPlanetId: string | null;
@@ -45,7 +46,7 @@ function StarDots() {
   );
 }
 
-export function SolarSystemScene({ onSelectPlanet, timeScale, focusPlanetId }: SolarSystemSceneProps) {
+export function SolarSystemScene({ planets, onSelectPlanet, timeScale, focusPlanetId }: SolarSystemSceneProps) {
   const focusPlanet = planets.find((planet) => planet.id === focusPlanetId) ?? null;
   const cameraPosition = focusPlanet ? [focusPlanet.orbitRadius + 2.5, 3.8, focusPlanet.orbitRadius + 2.5] : [0, 9, 16];
 

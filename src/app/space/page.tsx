@@ -12,7 +12,7 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 export default function SpacePage() {
   const { t, locale } = useI18n();
   const planets = getPlanets(locale);
-  const [selectedPlanet, setSelectedPlanet] = useState<PlanetInfo | null>(null);
+  const [selectedPlanetId, setSelectedPlanetId] = useState<string | null>(null);
   const [timeScale, setTimeScale] = useState(1);
   const [focusPlanetId, setFocusPlanetId] = useState<string | null>(null);
   const [leftPlanetId, setLeftPlanetId] = useState(planets[0].id);
@@ -20,9 +20,10 @@ export default function SpacePage() {
   const [missionAnswers, setMissionAnswers] = useState<Record<string, string>>({});
 
   const handlePlanetSelect = (planet: PlanetInfo) => {
-    setSelectedPlanet(planet);
+    setSelectedPlanetId(planet.id);
     setFocusPlanetId(planet.id);
   };
+  const selectedPlanet = selectedPlanetId ? planets.find((planet) => planet.id === selectedPlanetId) ?? null : null;
 
   return (
     <AppShell
@@ -52,7 +53,7 @@ export default function SpacePage() {
           </button>
         ) : null}
       </div>
-      <SolarSystemScene onSelectPlanet={handlePlanetSelect} timeScale={timeScale} focusPlanetId={focusPlanetId} />
+      <SolarSystemScene planets={planets} onSelectPlanet={handlePlanetSelect} timeScale={timeScale} focusPlanetId={focusPlanetId} />
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <PlanetComparePanel
           leftPlanetId={leftPlanetId}
@@ -70,7 +71,7 @@ export default function SpacePage() {
           }
         />
       </div>
-      <PlanetInfoModal planet={selectedPlanet} onClose={() => setSelectedPlanet(null)} />
+      <PlanetInfoModal planet={selectedPlanet} onClose={() => setSelectedPlanetId(null)} />
     </AppShell>
   );
 }
