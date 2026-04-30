@@ -19,9 +19,60 @@ export function PlanetComparePanel({ leftPlanetId, rightPlanetId, onLeftChange, 
   const isLeftBigger = left.size >= right.size;
   const isLeftFaster = left.orbitSpeed >= right.orbitSpeed;
   const isLeftFurther = left.orbitRadius >= right.orbitRadius;
-  const maxSize = Math.max(left.size, right.size, 0.1);
-  const maxSpeed = Math.max(left.orbitSpeed, right.orbitSpeed, 0.1);
-  const maxRadius = Math.max(left.orbitRadius, right.orbitRadius, 0.1);
+  const maxSize = Math.max(left.size, right.size, 0.01);
+  const maxSpeed = Math.max(left.orbitSpeed, right.orbitSpeed, 0.01);
+  const maxRadius = Math.max(left.orbitRadius, right.orbitRadius, 0.01);
+  const maxPeriod = Math.max(left.periodDays, right.periodDays, 1);
+
+  const winnerName = (leftWins: boolean) => (leftWins ? left.name : right.name);
+  const barWidth = (value: number, max: number) => `${Math.max(10, (value / max) * 100)}%`;
+
+  const metrics = [
+    {
+      key: "size",
+      label: t("space.compare.size"),
+      leftValue: left.size,
+      rightValue: right.size,
+      leftDisplay: left.size.toFixed(2),
+      rightDisplay: right.size.toFixed(2),
+      max: maxSize,
+      winner: winnerName(isLeftBigger),
+      reason: t("space.compare.bigger")
+    },
+    {
+      key: "speed",
+      label: t("space.compare.speed"),
+      leftValue: left.orbitSpeed,
+      rightValue: right.orbitSpeed,
+      leftDisplay: left.orbitSpeed.toFixed(2),
+      rightDisplay: right.orbitSpeed.toFixed(2),
+      max: maxSpeed,
+      winner: winnerName(isLeftFaster),
+      reason: t("space.compare.faster")
+    },
+    {
+      key: "radius",
+      label: t("space.compare.radius"),
+      leftValue: left.orbitRadius,
+      rightValue: right.orbitRadius,
+      leftDisplay: left.orbitRadius.toFixed(1),
+      rightDisplay: right.orbitRadius.toFixed(1),
+      max: maxRadius,
+      winner: winnerName(isLeftFurther),
+      reason: t("space.compare.further")
+    },
+    {
+      key: "period",
+      label: t("space.compare.period"),
+      leftValue: left.periodDays,
+      rightValue: right.periodDays,
+      leftDisplay: left.orbitPeriod,
+      rightDisplay: right.orbitPeriod,
+      max: maxPeriod,
+      winner: winnerName(left.periodDays >= right.periodDays),
+      reason: t("space.compare.longerPeriod")
+    }
+  ];
 
   return (
     <section className="rounded-2xl border border-white/15 bg-white/5 p-4">
@@ -50,59 +101,32 @@ export function PlanetComparePanel({ leftPlanetId, rightPlanetId, onLeftChange, 
           ))}
         </select>
       </div>
-      <div className="mt-3 grid gap-2 text-sm text-white/80">
-        <p>
-          {t("space.compare.size")}: <span className={isLeftBigger ? "text-cyan-200" : "text-white"}>{left.name}</span> {left.size.toFixed(2)} ·{" "}
-          <span className={!isLeftBigger ? "text-cyan-200" : "text-white"}>{right.name}</span> {right.size.toFixed(2)}
-        </p>
-        <p>
-          {t("space.compare.speed")}: <span className={isLeftFaster ? "text-cyan-200" : "text-white"}>{left.name}</span> {left.orbitSpeed.toFixed(2)} ·{" "}
-          <span className={!isLeftFaster ? "text-cyan-200" : "text-white"}>{right.name}</span> {right.orbitSpeed.toFixed(2)}
-        </p>
-        <p>
-          {t("space.compare.radius")}: <span className={isLeftFurther ? "text-cyan-200" : "text-white"}>{left.name}</span> {left.orbitRadius.toFixed(1)} ·{" "}
-          <span className={!isLeftFurther ? "text-cyan-200" : "text-white"}>{right.name}</span> {right.orbitRadius.toFixed(1)}
-        </p>
-        <p>
-          {t("space.compare.period")}: {left.name} — {left.orbitPeriod}, {right.name} — {right.orbitPeriod}
-        </p>
+      <div className="mt-3 space-y-3">
+        {metrics.map((metric) => (
+          <div key={metric.key} className="rounded-lg border border-white/15 bg-black/20 p-3">
+            <p className="text-sm font-medium text-white">{metric.label}</p>
+            <div className="mt-2 grid gap-2 md:grid-cols-2">
+              <div>
+                <p className="text-xs text-cyan-200">{left.name}</p>
+                <div className="mt-1 h-2 rounded bg-cyan-900/40">
+                  <div className="h-2 rounded bg-cyan-300" style={{ width: barWidth(metric.leftValue, metric.max) }} />
+                </div>
+                <p className="mt-1 text-xs text-white/70">{metric.leftDisplay}</p>
+              </div>
+              <div>
+                <p className="text-xs text-violet-200">{right.name}</p>
+                <div className="mt-1 h-2 rounded bg-violet-900/40">
+                  <div className="h-2 rounded bg-violet-300" style={{ width: barWidth(metric.rightValue, metric.max) }} />
+                </div>
+                <p className="mt-1 text-xs text-white/70">{metric.rightDisplay}</p>
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-emerald-200">
+              {t("space.compare.winnerPrefix")} <span className="font-semibold">{metric.winner}</span> — {metric.reason}
+            </p>
+          </div>
+        ))}
       </div>
-      <div className="mt-4 space-y-3">
-        <div>
-          <p className="mb-1 text-xs text-white/60">{t("space.compare.size")}</p>
-          <div className="h-2 rounded bg-white/10">
-            <div className="h-2 rounded bg-cyan-300" style={{ width: `${(left.size / maxSize) * 100}%` }} />
-          </div>
-          <div className="mt-1 h-2 rounded bg-white/10">
-            <div className="h-2 rounded bg-violet-300" style={{ width: `${(right.size / maxSize) * 100}%` }} />
-          </div>
-        </div>
-        <div>
-          <p className="mb-1 text-xs text-white/60">{t("space.compare.speed")}</p>
-          <div className="h-2 rounded bg-white/10">
-            <div className="h-2 rounded bg-cyan-300" style={{ width: `${(left.orbitSpeed / maxSpeed) * 100}%` }} />
-          </div>
-          <div className="mt-1 h-2 rounded bg-white/10">
-            <div className="h-2 rounded bg-violet-300" style={{ width: `${(right.orbitSpeed / maxSpeed) * 100}%` }} />
-          </div>
-        </div>
-        <div>
-          <p className="mb-1 text-xs text-white/60">{t("space.compare.radius")}</p>
-          <div className="h-2 rounded bg-white/10">
-            <div className="h-2 rounded bg-cyan-300" style={{ width: `${(left.orbitRadius / maxRadius) * 100}%` }} />
-          </div>
-          <div className="mt-1 h-2 rounded bg-white/10">
-            <div className="h-2 rounded bg-violet-300" style={{ width: `${(right.orbitRadius / maxRadius) * 100}%` }} />
-          </div>
-        </div>
-      </div>
-      <p className="mt-3 text-xs text-cyan-100/90">
-        {locale === "kk"
-          ? "Қорытынды: Күнге жақын планета әдетте жылдамырақ қозғалады; орбита үлкейген сайын период ұзарады."
-          : locale === "en"
-            ? "Takeaway: planets closer to the Sun usually move faster; larger orbits lead to longer periods."
-            : "Вывод: чем ближе планета к Солнцу, тем обычно выше скорость; чем больше орбита, тем длиннее период."}
-      </p>
     </section>
   );
 }

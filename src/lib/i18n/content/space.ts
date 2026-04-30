@@ -9,6 +9,7 @@ type PlanetText = {
 type SpaceMissionText = {
   question: string;
   hint: string;
+  explanation: string;
 };
 
 export const planetTextByLocale: Record<Locale, Record<string, PlanetText>> = {
@@ -195,18 +196,54 @@ planetTextByLocale.ru = {
 
 export const spaceMissionsByLocale: Record<Locale, Record<string, SpaceMissionText>> = {
   kk: {
-    "mission-fastest": { question: "Орбитасы ең жылдам планетаны тап.", hint: "Ол Күнге ең жақын орналасқан." },
-    "mission-longest-period": { question: "Орбиталық периоды ең ұзын объектіні таңда.", hint: "Бұл ең алыс орбитадағы карликті планета." },
-    "mission-rings": { question: "Айқын сақиналары бар объектіні тап.", hint: "Сақиналарымен ең танымал планета." }
+    "mission-fastest": {
+      question: "Орбитасы ең жылдам планетаны тап.",
+      hint: "Ол Күнге ең жақын орналасқан.",
+      explanation: "Күнге жақын объектілерде тартылыс күштірек, сондықтан орбиталық жылдамдық жоғары болады."
+    },
+    "mission-longest-period": {
+      question: "Орбиталық периоды ең ұзын объектіні таңда.",
+      hint: "Бұл ең алыс орбитадағы карликті планета.",
+      explanation: "Орбита үлкен болған сайын айналу жолы ұзарып, период та ұлғаяды."
+    },
+    "mission-rings": {
+      question: "Айқын сақиналары бар объектіні тап.",
+      hint: "Сақиналарымен ең танымал планета.",
+      explanation: "Сатурн мектеп моделдерінде сақиналары арқылы бірден танылады."
+    }
   },
   ru: {
-    "mission-fastest": { question: "Найди самую быструю планету по орбите.", hint: "Она ближе всех к Солнцу." },
-    "mission-longest-period": { question: "Выбери объект с самым длинным орбитальным периодом.", hint: "Это карликовая планета на самой дальней орбите." },
-    "mission-rings": { question: "Найди объект с заметными кольцами.", hint: "Самый известный обладатель колец в школьных учебниках." }
+    "mission-fastest": {
+      question: "Найди самую быструю планету по орбите.",
+      hint: "Она ближе всех к Солнцу.",
+      explanation: "Ближе к Солнцу — сильнее гравитация, поэтому орбитальная скорость выше."
+    },
+    "mission-longest-period": {
+      question: "Выбери объект с самым длинным орбитальным периодом.",
+      hint: "Это карликовая планета на самой дальней орбите.",
+      explanation: "Чем дальше орбита, тем длиннее путь и тем больше период обращения."
+    },
+    "mission-rings": {
+      question: "Найди объект с заметными кольцами.",
+      hint: "Самый известный обладатель колец в школьных учебниках.",
+      explanation: "У Сатурна наиболее заметные кольца, поэтому он легко узнается в модели."
+    }
   },
   en: {
-    "mission-fastest": { question: "Find the fastest planet in orbit.", hint: "It is the closest one to the Sun." },
-    "mission-longest-period": { question: "Choose the object with the longest orbital period.", hint: "It is a dwarf planet on the farthest orbit." },
-    "mission-rings": { question: "Find the object with visible rings.", hint: "The most famous ringed planet." }
+    "mission-fastest": {
+      question: "Find the fastest planet in orbit.",
+      hint: "It is the closest one to the Sun.",
+      explanation: "Closer to the Sun means stronger gravity, which requires higher orbital speed."
+    },
+    "mission-longest-period": {
+      question: "Choose the object with the longest orbital period.",
+      hint: "It is a dwarf planet on the farthest orbit.",
+      explanation: "A larger orbit means a longer path, so the revolution period is longer."
+    },
+    "mission-rings": {
+      question: "Find the object with visible rings.",
+      hint: "The most famous ringed planet.",
+      explanation: "Saturn has the most prominent rings, so it is easiest to identify."
+    }
   }
 };

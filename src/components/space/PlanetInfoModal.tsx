@@ -43,6 +43,11 @@ export function PlanetInfoModal({ planet, onClose }: PlanetInfoModalProps) {
               {t("space.modal.orbitRadius")}: {planet.orbitRadius} AU ({t("space.modal.conditional")}) · {t("space.modal.speed")}:{" "}
               {planet.orbitSpeed.toFixed(2)}x
             </div>
+            <div className="mt-3 rounded-lg border border-white/15 bg-white/5 p-3 text-xs text-white/80">
+              <p className="font-semibold text-cyan-100">{t("space.learning.title")}</p>
+              <p className="mt-1">• {t("space.learning.nearFast")}</p>
+              <p className="mt-1">• {t("space.learning.largeOrbitLongPeriod")}</p>
+            </div>
             <button
               type="button"
               onClick={onClose}

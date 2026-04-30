@@ -1,67 +1,81 @@
 "use client";
 
-import { getPlanets } from "@/data/planets";
-import { getSpaceMissions } from "@/data/spaceMissions";
+import { AnimatePresence, motion } from "framer-motion";
+import { SpaceMission } from "@/data/spaceMissions";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 type SpaceMissionsProps = {
-  answers: Record<string, string>;
-  onAnswer: (missionId: string, planetId: string) => void;
+  missions: SpaceMission[];
+  activeMissionIndex: number;
+  solvedMissionIds: string[];
+  score: number;
+  streak: number;
+  feedback: { type: "success" | "error" | null; message: string };
 };
 
-export function SpaceMissions({ answers, onAnswer }: SpaceMissionsProps) {
-  const { locale, t } = useI18n();
-  const planets = getPlanets(locale);
-  const spaceMissions = getSpaceMissions(locale);
-  const solvedCount = spaceMissions.filter((mission) => answers[mission.id] === mission.answerPlanetId).length;
-  const score = spaceMissions.reduce((sum, mission) => sum + (answers[mission.id] === mission.answerPlanetId ? 10 : 0), 0);
+export function SpaceMissions({ missions, activeMissionIndex, solvedMissionIds, score, streak, feedback }: SpaceMissionsProps) {
+  const { t } = useI18n();
+  const solvedCount = solvedMissionIds.length;
+  const activeMission = missions[activeMissionIndex] ?? null;
 
   return (
     <section className="rounded-2xl border border-white/15 bg-white/5 p-4">
-      <h3 className="text-lg font-semibold text-white">{t("space.missions.title")}</h3>
-      <p className="mt-1 text-sm text-cyan-200">
-        {t("space.missions.progress")}: {solvedCount}/{spaceMissions.length} · {locale === "kk" ? "Ұпай" : locale === "en" ? "Points" : "Очки"}: {score}
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-white">{t("space.missions.title")}</h3>
+        <p className="text-sm text-cyan-200">
+          {t("space.missions.progress")}: {solvedCount}/{missions.length}
+        </p>
+      </div>
+      <p className="mt-1 text-xs text-white/70">
+        {t("space.missions.points")}: {score} · {t("space.missions.streak")}: {streak}
       </p>
       <div className="mt-3 space-y-3">
-        {spaceMissions.map((mission) => {
-          const selected = answers[mission.id] ?? "";
-          const isCorrect = selected === mission.answerPlanetId;
-          const isWrong = Boolean(selected) && !isCorrect;
+        {missions.map((mission, index) => {
+          const isSolved = solvedMissionIds.includes(mission.id);
+          const isActive = index === activeMissionIndex;
           return (
-            <div key={mission.id} className="rounded-lg border border-white/15 bg-black/20 p-3">
-              <p className="text-sm text-white">{mission.question}</p>
-              <div className="mt-2 grid grid-cols-2 gap-2">
-                {planets.map((planet) => {
-                  const isSelected = selected === planet.id;
-                  const isRightOption = mission.answerPlanetId === planet.id;
-                  const className = isCorrect && isRightOption
-                    ? "border-emerald-300/70 bg-emerald-500/20 text-emerald-100 animate-pulse"
-                    : isWrong && isSelected
-                      ? "border-rose-300/70 bg-rose-500/20 text-rose-100"
-                      : "border-white/20 bg-slate-950 text-white/85 hover:bg-slate-900";
-                  return (
-                    <button
-                      key={`${mission.id}-${planet.id}`}
-                      type="button"
-                      onClick={() => onAnswer(mission.id, planet.id)}
-                      className={`rounded-lg border px-3 py-2 text-left text-xs transition ${className}`}
-                    >
-                      {planet.name}
-                    </button>
-                  );
-                })}
-              </div>
-              {selected ? (
-                <p className={`mt-2 text-xs ${isCorrect ? "text-emerald-300" : "text-amber-200"}`}>
-                  {isCorrect
-                    ? `${t("space.missions.correct")} +10`
-                    : `${t("space.missions.wrongPrefix")} ${mission.hint}`}
-                </p>
-              ) : null}
+            <div
+              key={mission.id}
+              className={`rounded-lg border p-3 ${
+                isSolved
+                  ? "border-emerald-300/40 bg-emerald-500/10"
+                  : isActive
+                    ? "border-cyan-300/40 bg-cyan-500/10"
+                    : "border-white/15 bg-black/20"
+              }`}
+            >
+              <p className="text-sm text-white">
+                {isSolved ? "✅ " : isActive ? "🎯 " : "• "}
+                {mission.question}
+              </p>
+              {isActive ? <p className="mt-2 text-xs text-cyan-100">{t("space.missions.clickPlanetCta")}</p> : null}
             </div>
           );
         })}
       </div>
+      {activeMission ? (
+        <div className="mt-3 rounded-lg border border-white/15 bg-black/20 p-3 text-xs text-white/70">
+          {t("space.missions.currentHint")}: {activeMission.hint}
+        </div>
+      ) : null}
+
+      <AnimatePresence mode="wait">
+        {feedback.type ? (
+          <motion.div
+            key={`${feedback.type}-${feedback.message}`}
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.98 }}
+            className={`mt-3 rounded-lg border p-3 text-sm ${
+              feedback.type === "success"
+                ? "border-emerald-300/40 bg-emerald-500/15 text-emerald-100"
+                : "border-amber-300/40 bg-amber-500/15 text-amber-100"
+            }`}
+          >
+            {feedback.message}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </section>
   );
 }
