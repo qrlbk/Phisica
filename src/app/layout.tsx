@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { I18nProvider } from "@/lib/i18n/I18nProvider";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 
 export const metadata: Metadata = {
   title: "Interactive Physics World",
@@ -8,8 +10,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru">
-      <body>{children}</body>
+    <html lang="kk">
+      <body>
+        <I18nProvider>
+          <LanguageSwitcher />
+          {children}
+        </I18nProvider>
+      </body>
     </html>
   );
 }

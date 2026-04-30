@@ -6,14 +6,16 @@ import { QuizGame } from "@/components/qa/QuizGame";
 import { LeaderboardTable } from "@/components/qa/LeaderboardTable";
 import { type QuizDifficulty } from "@/data/qa";
 import { readLeaderboard } from "@/lib/quiz/leaderboard";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export default function QaPage() {
+  const { t } = useI18n();
   const [difficulty, setDifficulty] = useState<QuizDifficulty | null>(null);
 
   return (
     <AppShell
-      title="Игровой Q&A"
-      description="Ответь на физические вопросы в формате квиза: 4 варианта ответа, таймер, серия и очки."
+      title={t("qa.title")}
+      description={t("qa.description")}
     >
       {difficulty ? (
         <QuizGame difficulty={difficulty} onChangeDifficulty={() => setDifficulty(null)} />
@@ -21,9 +23,9 @@ export default function QaPage() {
         <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
           <section className="grid gap-3 md:grid-cols-3">
             {[
-              { id: "easy", title: "Легкий", subtitle: "Базовые вопросы, 30 секунд" },
-              { id: "medium", title: "Средний", subtitle: "Формулы и расчеты, 25 секунд" },
-              { id: "hard", title: "Сложный", subtitle: "Больше логики и физики, 20 секунд" }
+              { id: "easy", title: t("qa.level.easy"), subtitle: t("qa.level.easyDesc") },
+              { id: "medium", title: t("qa.level.medium"), subtitle: t("qa.level.mediumDesc") },
+              { id: "hard", title: t("qa.level.hard"), subtitle: t("qa.level.hardDesc") }
             ].map((item) => (
               <button
                 key={item.id}
