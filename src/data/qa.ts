@@ -1,3 +1,6 @@
+import { Locale } from "@/lib/i18n/translations";
+import { quizQuestionsByLocale } from "@/lib/i18n/content/qa";
+
 export type QaCategory = "Механика" | "Электричество" | "Космос";
 export type QuizDifficulty = "easy" | "medium" | "hard";
 
@@ -114,3 +117,7 @@ export const quizQuestions: QuizQuestion[] = [
     explanation: "С ростом расстояния сила гравитации уменьшается, и орбитальное движение становится медленнее."
   }
 ];
+
+export function getQuizQuestions(locale: Locale): QuizQuestion[] {
+  return (quizQuestionsByLocale[locale] ?? quizQuestionsByLocale.ru) as QuizQuestion[];
+}

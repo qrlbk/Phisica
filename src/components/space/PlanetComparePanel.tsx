@@ -1,4 +1,7 @@
-import { planets } from "@/data/planets";
+"use client";
+
+import { getPlanets } from "@/data/planets";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 type PlanetComparePanelProps = {
   leftPlanetId: string;
@@ -8,6 +11,8 @@ type PlanetComparePanelProps = {
 };
 
 export function PlanetComparePanel({ leftPlanetId, rightPlanetId, onLeftChange, onRightChange }: PlanetComparePanelProps) {
+  const { t, locale } = useI18n();
+  const planets = getPlanets(locale);
   const left = planets.find((planet) => planet.id === leftPlanetId) ?? planets[0];
   const right = planets.find((planet) => planet.id === rightPlanetId) ?? planets[1];
 
@@ -17,7 +22,7 @@ export function PlanetComparePanel({ leftPlanetId, rightPlanetId, onLeftChange, 
 
   return (
     <section className="rounded-2xl border border-white/15 bg-white/5 p-4">
-      <h3 className="text-lg font-semibold text-white">Сравнение планет</h3>
+      <h3 className="text-lg font-semibold text-white">{t("space.compare.title")}</h3>
       <div className="mt-3 grid gap-2 md:grid-cols-2">
         <select
           value={leftPlanetId}
@@ -44,19 +49,19 @@ export function PlanetComparePanel({ leftPlanetId, rightPlanetId, onLeftChange, 
       </div>
       <div className="mt-3 grid gap-2 text-sm text-white/80">
         <p>
-          Размер: <span className={isLeftBigger ? "text-cyan-200" : "text-white"}>{left.name}</span> {left.size.toFixed(2)} ·{" "}
+          {t("space.compare.size")}: <span className={isLeftBigger ? "text-cyan-200" : "text-white"}>{left.name}</span> {left.size.toFixed(2)} ·{" "}
           <span className={!isLeftBigger ? "text-cyan-200" : "text-white"}>{right.name}</span> {right.size.toFixed(2)}
         </p>
         <p>
-          Скорость орбиты: <span className={isLeftFaster ? "text-cyan-200" : "text-white"}>{left.name}</span> {left.orbitSpeed.toFixed(2)} ·{" "}
+          {t("space.compare.speed")}: <span className={isLeftFaster ? "text-cyan-200" : "text-white"}>{left.name}</span> {left.orbitSpeed.toFixed(2)} ·{" "}
           <span className={!isLeftFaster ? "text-cyan-200" : "text-white"}>{right.name}</span> {right.orbitSpeed.toFixed(2)}
         </p>
         <p>
-          Дальность орбиты: <span className={isLeftFurther ? "text-cyan-200" : "text-white"}>{left.name}</span> {left.orbitRadius.toFixed(1)} ·{" "}
+          {t("space.compare.radius")}: <span className={isLeftFurther ? "text-cyan-200" : "text-white"}>{left.name}</span> {left.orbitRadius.toFixed(1)} ·{" "}
           <span className={!isLeftFurther ? "text-cyan-200" : "text-white"}>{right.name}</span> {right.orbitRadius.toFixed(1)}
         </p>
         <p>
-          Период: {left.name} — {left.orbitPeriod}, {right.name} — {right.orbitPeriod}
+          {t("space.compare.period")}: {left.name} — {left.orbitPeriod}, {right.name} — {right.orbitPeriod}
         </p>
       </div>
     </section>

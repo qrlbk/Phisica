@@ -1,21 +1,25 @@
+"use client";
+
 import { LeaderboardEntry } from "@/lib/quiz/leaderboard";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 type LeaderboardTableProps = {
   entries: LeaderboardEntry[];
 };
 
-const difficultyLabel = {
-  easy: "Легкий",
-  medium: "Средний",
-  hard: "Сложный"
-} as const;
-
 export function LeaderboardTable({ entries }: LeaderboardTableProps) {
+  const { t } = useI18n();
+  const difficultyLabel = {
+    easy: t("qa.leaderboard.easy"),
+    medium: t("qa.leaderboard.medium"),
+    hard: t("qa.leaderboard.hard")
+  } as const;
+
   return (
     <section className="rounded-2xl border border-white/15 bg-white/5 p-4">
-      <h3 className="text-lg font-semibold text-white">Таблица лидеров</h3>
+      <h3 className="text-lg font-semibold text-white">{t("qa.leaderboard.title")}</h3>
       {entries.length === 0 ? (
-        <p className="mt-2 text-sm text-white/65">Пока нет результатов. Будь первым в рейтинге.</p>
+        <p className="mt-2 text-sm text-white/65">{t("qa.leaderboard.empty")}</p>
       ) : (
         <div className="mt-3 space-y-2">
           {entries.map((entry, index) => (

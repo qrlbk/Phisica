@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { PlanetInfo } from "@/data/planets";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 type PlanetInfoModalProps = {
   planet: PlanetInfo | null;
@@ -9,6 +10,8 @@ type PlanetInfoModalProps = {
 };
 
 export function PlanetInfoModal({ planet, onClose }: PlanetInfoModalProps) {
+  const { t } = useI18n();
+
   return (
     <AnimatePresence>
       {planet ? (
@@ -28,21 +31,24 @@ export function PlanetInfoModal({ planet, onClose }: PlanetInfoModalProps) {
             transition={{ duration: 0.2 }}
           >
             <h3 className="text-2xl font-semibold text-white">{planet.name}</h3>
-            <p className="mt-2 text-xs uppercase tracking-wide text-cyan-200">Период: {planet.orbitPeriod}</p>
+            <p className="mt-2 text-xs uppercase tracking-wide text-cyan-200">
+              {t("space.modal.period")}: {planet.orbitPeriod}
+            </p>
             <ul className="mt-3 space-y-2 text-sm text-white/80">
               {planet.facts.map((fact) => (
                 <li key={fact}>- {fact}</li>
               ))}
             </ul>
             <div className="mt-4 rounded-lg border border-white/15 bg-white/5 p-3 text-sm text-cyan-100">
-              Радиус орбиты: {planet.orbitRadius} AU (условно) · Скорость: {planet.orbitSpeed.toFixed(2)}x
+              {t("space.modal.orbitRadius")}: {planet.orbitRadius} AU ({t("space.modal.conditional")}) · {t("space.modal.speed")}:{" "}
+              {planet.orbitSpeed.toFixed(2)}x
             </div>
             <button
               type="button"
               onClick={onClose}
               className="mt-5 rounded-lg bg-cyan-500 px-4 py-2 font-medium text-slate-950 transition hover:bg-cyan-400"
             >
-              Закрыть
+              {t("space.modal.close")}
             </button>
           </motion.div>
         </motion.div>

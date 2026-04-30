@@ -1,23 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isPhysicsQuestion } from "@/lib/ai/topicGuard";
+import { Locale, defaultLocale, messages } from "@/lib/i18n/translations";
 
 export async function POST(request: NextRequest) {
-  const body = (await request.json()) as { message?: string };
+  const body = (await request.json()) as { message?: string; locale?: Locale };
+  const locale: Locale = body.locale && body.locale in messages ? body.locale : defaultLocale;
+  const t = (key: string) => messages[locale][key] ?? messages[defaultLocale][key] ?? key;
   const message = body.message?.trim() ?? "";
 
   if (!message) {
-    return NextResponse.json({ error: "Введите вопрос." }, { status: 400 });
+    return NextResponse.json({ error: t("api.askQuestion") }, { status: 400 });
   }
 
   if (!isPhysicsQuestion(message)) {
     return NextResponse.json(
-      { answer: "Я помогаю только с вопросами по физике школьного уровня. Попробуй переформулировать вопрос." },
+      { answer: t("api.physicsOnly") },
       { status: 200 }
     );
   }
 
   return NextResponse.json({
-    answer:
-      "Шаг 1: Определи известные величины.\nШаг 2: Выбери формулу из школьной физики.\nШаг 3: Подставь значения и проверь единицы измерения.\nЕсли хочешь, пришли конкретные числа, и я решу задачу пошагово."
+    answer: t("api.stepAnswer")
   });
 }

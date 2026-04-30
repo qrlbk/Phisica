@@ -1,4 +1,17 @@
 const allowedKeywords = [
+  "physics",
+  "force",
+  "acceleration",
+  "mass",
+  "energy",
+  "electric",
+  "voltage",
+  "current",
+  "resistance",
+  "gravity",
+  "orbit",
+  "mechanics",
+  "space",
   "физика",
   "сила",
   "ускорение",
@@ -11,7 +24,17 @@ const allowedKeywords = [
   "гравитац",
   "орбита",
   "механика",
-  "космос"
+  "космос",
+  "күш",
+  "үдеу",
+  "масса",
+  "энергия",
+  "кернеу",
+  "ток",
+  "кедергі",
+  "тартылыс",
+  "орбита",
+  "ғарыш"
 ];
 
 export function isPhysicsQuestion(question: string): boolean {

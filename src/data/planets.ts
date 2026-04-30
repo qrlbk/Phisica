@@ -1,3 +1,6 @@
+import { Locale } from "@/lib/i18n/translations";
+import { planetTextByLocale } from "@/lib/i18n/content/space";
+
 export type PlanetInfo = {
   id: string;
   name: string;
@@ -149,3 +152,19 @@ export const planets: PlanetInfo[] = [
     ]
   }
 ];
+
+export function getPlanets(locale: Locale): PlanetInfo[] {
+  const texts = planetTextByLocale[locale] ?? planetTextByLocale.ru;
+  return planets.map((planet) => {
+    const localized = texts[planet.id];
+    if (!localized) {
+      return planet;
+    }
+    return {
+      ...planet,
+      name: localized.name,
+      orbitPeriod: localized.orbitPeriod,
+      facts: localized.facts
+    };
+  });
+}

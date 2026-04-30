@@ -1,3 +1,6 @@
+import { Locale } from "@/lib/i18n/translations";
+import { spaceMissionsByLocale } from "@/lib/i18n/content/space";
+
 export type SpaceMission = {
   id: string;
   question: string;
@@ -25,3 +28,18 @@ export const spaceMissions: SpaceMission[] = [
     hint: "Самый известный обладатель колец в школьных учебниках."
   }
 ];
+
+export function getSpaceMissions(locale: Locale): SpaceMission[] {
+  const texts = spaceMissionsByLocale[locale] ?? spaceMissionsByLocale.ru;
+  return spaceMissions.map((mission) => {
+    const localized = texts[mission.id];
+    if (!localized) {
+      return mission;
+    }
+    return {
+      ...mission,
+      question: localized.question,
+      hint: localized.hint
+    };
+  });
+}

@@ -5,7 +5,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { AnswerOptions } from "@/components/qa/AnswerOptions";
 import { QuizHeader } from "@/components/qa/QuizHeader";
 import { ResultCard } from "@/components/qa/ResultCard";
-import { quizQuestions, type QuizDifficulty } from "@/data/qa";
+import { getQuizQuestions, type QuizDifficulty } from "@/data/qa";
 import { getScoreDelta } from "@/lib/quiz/scoring";
 import { getTimerByDifficulty } from "@/lib/quiz/timer";
 import {
@@ -14,6 +14,7 @@ import {
   writeLeaderboard,
   type LeaderboardEntry
 } from "@/lib/quiz/leaderboard";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 type QuizGameProps = {
   difficulty: QuizDifficulty;
@@ -21,7 +22,11 @@ type QuizGameProps = {
 };
 
 export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
-  const questions = useMemo(() => quizQuestions.filter((question) => question.difficulty === difficulty), [difficulty]);
+  const { locale, t } = useI18n();
+  const questions = useMemo(
+    () => getQuizQuestions(locale).filter((question) => question.difficulty === difficulty),
+    [difficulty, locale]
+  );
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -32,7 +37,7 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
   const [usedHint, setUsedHint] = useState(false);
   const [timeLeft, setTimeLeft] = useState(getTimerByDifficulty(difficulty));
   const [isFinished, setIsFinished] = useState(false);
-  const [playerName, setPlayerName] = useState("Игрок");
+  const [playerName, setPlayerName] = useState("Player");
   const [isSaved, setIsSaved] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(() => readLeaderboard());
 
@@ -117,7 +122,7 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
       return;
     }
 
-    const cleanName = playerName.trim() || "Игрок";
+    const cleanName = playerName.trim() || "Player";
     const next = addLeaderboardEntry(leaderboard, {
       name: cleanName,
       score,
@@ -178,11 +183,11 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
             disabled={usedHint || answered}
             className="rounded-lg border border-white/20 bg-white/5 px-3 py-1.5 text-sm text-white/85 disabled:opacity-50"
           >
-            {usedHint ? "Подсказка использована" : "Подсказка (-3)"}
+            {usedHint ? t("qa.hint.used") : t("qa.hint.button")}
           </button>
           {answered ? (
             <span className={`text-sm ${isCorrect ? "text-emerald-300" : "text-rose-300"}`}>
-              {isCorrect ? "Верно! " : "Неверно. "}
+              {isCorrect ? `${t("qa.answer.correct")} ` : `${t("qa.answer.wrong")} `}
               {currentQuestion.explanation}
             </span>
           ) : null}
@@ -200,7 +205,7 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
           disabled={!answered}
           className="mt-4 rounded-lg bg-cyan-400 px-4 py-2 text-sm font-medium text-slate-950 disabled:opacity-60"
         >
-          {currentQuestionIndex === questions.length - 1 ? "Показать результат" : "Следующий вопрос"}
+          {currentQuestionIndex === questions.length - 1 ? t("qa.showResult") : t("qa.next")}
         </button>
       </GlassCard>
     </section>

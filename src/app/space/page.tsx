@@ -6,11 +6,12 @@ import { SolarSystemScene } from "@/components/space/SolarSystemScene";
 import { PlanetInfoModal } from "@/components/space/PlanetInfoModal";
 import { PlanetComparePanel } from "@/components/space/PlanetComparePanel";
 import { SpaceMissions } from "@/components/space/SpaceMissions";
-import { PlanetInfo, planets } from "@/data/planets";
+import { PlanetInfo, getPlanets } from "@/data/planets";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 export default function SpacePage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const planets = getPlanets(locale);
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetInfo | null>(null);
   const [timeScale, setTimeScale] = useState(1);
   const [focusPlanetId, setFocusPlanetId] = useState<string | null>(null);

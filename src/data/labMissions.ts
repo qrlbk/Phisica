@@ -1,3 +1,6 @@
+import { Locale } from "@/lib/i18n/translations";
+import { labMissionLabelsByLocale } from "@/lib/i18n/content/lab";
+
 export type LabMissionId = "accelOver6" | "currentNear2" | "energyBalance" | "overcomeFriction";
 
 export const labMissions: Array<{ id: LabMissionId; label: string; points: number }> = [
@@ -6,3 +9,11 @@ export const labMissions: Array<{ id: LabMissionId; label: string; points: numbe
   { id: "energyBalance", label: "Сбалансируй Ek и Ep", points: 30 },
   { id: "overcomeFriction", label: "Преодолей порог трения", points: 30 }
 ];
+
+export function getLabMissions(locale: Locale): Array<{ id: LabMissionId; label: string; points: number }> {
+  const labels = labMissionLabelsByLocale[locale] ?? labMissionLabelsByLocale.ru;
+  return labMissions.map((mission) => ({
+    ...mission,
+    label: labels[mission.id]
+  }));
+}

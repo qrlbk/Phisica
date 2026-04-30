@@ -7,6 +7,7 @@ import { EnergyExperiment } from "./EnergyExperiment";
 import { FrictionExperiment } from "./FrictionExperiment";
 import { LabMissions } from "./LabMissions";
 import { LabMissionId } from "@/data/labMissions";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 const tabs = [
   { id: "newton", label: "F = ma" },
@@ -16,6 +17,7 @@ const tabs = [
 ] as const;
 
 export function ExperimentTabs() {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]["id"]>("newton");
   const [missions, setMissions] = useState<Record<LabMissionId, boolean>>({
     accelOver6: false,
@@ -49,7 +51,13 @@ export function ExperimentTabs() {
               activeTab === tab.id ? "bg-cyan-400 text-slate-900" : "bg-white/10 text-white/75 hover:bg-white/20"
             }`}
           >
-            {tab.label}
+            {tab.id === "newton"
+              ? t("lab.tabs.newton")
+              : tab.id === "ohm"
+                ? t("lab.tabs.ohm")
+                : tab.id === "energy"
+                  ? t("lab.tabs.energy")
+                  : t("lab.tabs.friction")}
           </button>
         ))}
       </div>

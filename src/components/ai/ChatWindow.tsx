@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 type Message = { role: "user" | "assistant"; text: string };
 
 export function ChatWindow() {
+  const { locale, t } = useI18n();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
@@ -24,13 +26,13 @@ export function ChatWindow() {
       const response = await fetch("/api/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message })
+        body: JSON.stringify({ message, locale })
       });
       const data = (await response.json()) as { answer?: string; error?: string };
 
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", text: data.answer ?? data.error ?? "Ошибка обработки запроса." }
+        { role: "assistant", text: data.answer ?? data.error ?? t("ai.chat.error") }
       ]);
     } finally {
       setLoading(false);
@@ -40,11 +42,11 @@ export function ChatWindow() {
   return (
     <GlassCard className="flex h-[560px] flex-col">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-white">AI помощник по физике</h3>
-        <p className="mt-1 text-sm text-white/70">Объясняет темы и задачи только в пределах школьной физики.</p>
+        <h3 className="text-lg font-semibold text-white">{t("ai.chat.title")}</h3>
+        <p className="mt-1 text-sm text-white/70">{t("ai.chat.subtitle")}</p>
       </div>
       <div className="flex-1 space-y-3 overflow-y-auto rounded-xl border border-white/10 bg-black/20 p-3">
-        {messages.length === 0 && <p className="text-sm text-white/50">Например: «Как найти ускорение, если F=12 Н и m=3 кг?»</p>}
+        {messages.length === 0 && <p className="text-sm text-white/50">{t("ai.chat.example")}</p>}
         {messages.map((message, index) => (
           <div
             key={`${message.role}-${index}`}
@@ -66,7 +68,7 @@ export function ChatWindow() {
               void sendMessage();
             }
           }}
-          placeholder="Задай вопрос по физике..."
+          placeholder={t("ai.chat.placeholder")}
           className="flex-1 rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300"
         />
         <button
@@ -75,7 +77,7 @@ export function ChatWindow() {
           disabled={loading}
           className="rounded-lg bg-cyan-400 px-4 py-2 text-sm font-medium text-slate-950 disabled:opacity-60"
         >
-          {loading ? "..." : "Отправить"}
+          {loading ? t("ai.chat.loading") : t("ai.chat.send")}
         </button>
       </div>
     </GlassCard>
