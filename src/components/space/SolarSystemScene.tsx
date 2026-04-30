@@ -12,6 +12,9 @@ type SolarSystemSceneProps = {
   onSelectPlanet: (planet: PlanetInfo) => void;
   timeScale: number;
   focusPlanetId: string | null;
+  sunMassScale: number;
+  orbitRadiusScale: number;
+  velocityScale: number;
 };
 
 function OrbitRing({ radius }: { radius: number }) {
@@ -46,17 +49,26 @@ function StarDots() {
   );
 }
 
-export function SolarSystemScene({ planets, onSelectPlanet, timeScale, focusPlanetId }: SolarSystemSceneProps) {
+export function SolarSystemScene({
+  planets,
+  onSelectPlanet,
+  timeScale,
+  focusPlanetId,
+  sunMassScale,
+  orbitRadiusScale,
+  velocityScale
+}: SolarSystemSceneProps) {
   const focusPlanet = planets.find((planet) => planet.id === focusPlanetId) ?? null;
-  const cameraPosition = focusPlanet ? [focusPlanet.orbitRadius + 2.5, 3.8, focusPlanet.orbitRadius + 2.5] : [0, 9, 16];
+  const focusRadius = (focusPlanet?.orbitRadius ?? 0) * orbitRadiusScale;
+  const cameraPosition = focusPlanet ? [focusRadius + 2.5, 3.8, focusRadius + 2.5] : [0, 9, 16];
 
   return (
     <div className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-white/15 bg-[#030712]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.15),transparent_40%),radial-gradient(circle_at_85%_15%,rgba(168,85,247,0.18),transparent_35%)]" />
       <Canvas camera={{ position: cameraPosition as [number, number, number], fov: 55 }}>
         <ambientLight intensity={0.6} />
-        <pointLight position={[0, 0, 0]} intensity={120} color="#fbbf24" />
-        <pointLight position={[0, 0, 0]} intensity={20} color="#fdba74" />
+        <pointLight position={[0, 0, 0]} intensity={120 * sunMassScale} color="#fbbf24" />
+        <pointLight position={[0, 0, 0]} intensity={20 * sunMassScale} color="#fdba74" />
         <StarDots />
 
         <mesh>
@@ -70,8 +82,15 @@ export function SolarSystemScene({ planets, onSelectPlanet, timeScale, focusPlan
 
         {planets.map((planet) => (
           <group key={`orbit-${planet.id}`}>
-            <OrbitRing radius={planet.orbitRadius} />
-            <Planet planet={planet} onSelect={onSelectPlanet} timeScale={timeScale} />
+            <OrbitRing radius={planet.orbitRadius * orbitRadiusScale} />
+            <Planet
+              planet={planet}
+              onSelect={onSelectPlanet}
+              timeScale={timeScale}
+              orbitRadiusScale={orbitRadiusScale}
+              velocityScale={velocityScale}
+              sunMassScale={sunMassScale}
+            />
           </group>
         ))}
 

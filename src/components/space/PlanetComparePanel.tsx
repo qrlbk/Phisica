@@ -19,6 +19,9 @@ export function PlanetComparePanel({ leftPlanetId, rightPlanetId, onLeftChange, 
   const isLeftBigger = left.size >= right.size;
   const isLeftFaster = left.orbitSpeed >= right.orbitSpeed;
   const isLeftFurther = left.orbitRadius >= right.orbitRadius;
+  const maxSize = Math.max(left.size, right.size, 0.1);
+  const maxSpeed = Math.max(left.orbitSpeed, right.orbitSpeed, 0.1);
+  const maxRadius = Math.max(left.orbitRadius, right.orbitRadius, 0.1);
 
   return (
     <section className="rounded-2xl border border-white/15 bg-white/5 p-4">
@@ -64,6 +67,42 @@ export function PlanetComparePanel({ leftPlanetId, rightPlanetId, onLeftChange, 
           {t("space.compare.period")}: {left.name} — {left.orbitPeriod}, {right.name} — {right.orbitPeriod}
         </p>
       </div>
+      <div className="mt-4 space-y-3">
+        <div>
+          <p className="mb-1 text-xs text-white/60">{t("space.compare.size")}</p>
+          <div className="h-2 rounded bg-white/10">
+            <div className="h-2 rounded bg-cyan-300" style={{ width: `${(left.size / maxSize) * 100}%` }} />
+          </div>
+          <div className="mt-1 h-2 rounded bg-white/10">
+            <div className="h-2 rounded bg-violet-300" style={{ width: `${(right.size / maxSize) * 100}%` }} />
+          </div>
+        </div>
+        <div>
+          <p className="mb-1 text-xs text-white/60">{t("space.compare.speed")}</p>
+          <div className="h-2 rounded bg-white/10">
+            <div className="h-2 rounded bg-cyan-300" style={{ width: `${(left.orbitSpeed / maxSpeed) * 100}%` }} />
+          </div>
+          <div className="mt-1 h-2 rounded bg-white/10">
+            <div className="h-2 rounded bg-violet-300" style={{ width: `${(right.orbitSpeed / maxSpeed) * 100}%` }} />
+          </div>
+        </div>
+        <div>
+          <p className="mb-1 text-xs text-white/60">{t("space.compare.radius")}</p>
+          <div className="h-2 rounded bg-white/10">
+            <div className="h-2 rounded bg-cyan-300" style={{ width: `${(left.orbitRadius / maxRadius) * 100}%` }} />
+          </div>
+          <div className="mt-1 h-2 rounded bg-white/10">
+            <div className="h-2 rounded bg-violet-300" style={{ width: `${(right.orbitRadius / maxRadius) * 100}%` }} />
+          </div>
+        </div>
+      </div>
+      <p className="mt-3 text-xs text-cyan-100/90">
+        {locale === "kk"
+          ? "Қорытынды: Күнге жақын планета әдетте жылдамырақ қозғалады; орбита үлкейген сайын период ұзарады."
+          : locale === "en"
+            ? "Takeaway: planets closer to the Sun usually move faster; larger orbits lead to longer periods."
+            : "Вывод: чем ближе планета к Солнцу, тем обычно выше скорость; чем больше орбита, тем длиннее период."}
+      </p>
     </section>
   );
 }

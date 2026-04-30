@@ -10,20 +10,25 @@ type PlanetProps = {
   planet: PlanetInfo;
   onSelect: (planet: PlanetInfo) => void;
   timeScale: number;
+  orbitRadiusScale: number;
+  velocityScale: number;
+  sunMassScale: number;
 };
 
-export function Planet({ planet, onSelect, timeScale }: PlanetProps) {
+export function Planet({ planet, onSelect, timeScale, orbitRadiusScale, velocityScale, sunMassScale }: PlanetProps) {
   const meshRef = useRef<Mesh>(null);
   const groupRef = useRef<Group>(null);
+  const scaledRadius = planet.orbitRadius * orbitRadiusScale;
 
   useFrame(({ clock }) => {
     if (!meshRef.current || !groupRef.current) {
       return;
     }
 
-    const t = clock.getElapsedTime() * planet.orbitSpeed * 0.3 * timeScale;
-    groupRef.current.position.x = Math.cos(t) * planet.orbitRadius;
-    groupRef.current.position.z = Math.sin(t) * planet.orbitRadius;
+    const gravityFactor = Math.sqrt(sunMassScale) / Math.sqrt(Math.max(orbitRadiusScale, 0.3));
+    const t = clock.getElapsedTime() * planet.orbitSpeed * velocityScale * gravityFactor * 0.3 * timeScale;
+    groupRef.current.position.x = Math.cos(t) * scaledRadius;
+    groupRef.current.position.z = Math.sin(t) * scaledRadius;
     meshRef.current.rotation.y += 0.01;
   });
 
