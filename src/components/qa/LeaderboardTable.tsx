@@ -1,0 +1,33 @@
+import { LeaderboardEntry } from "@/lib/quiz/leaderboard";
+
+type LeaderboardTableProps = {
+  entries: LeaderboardEntry[];
+};
+
+const difficultyLabel = {
+  easy: "Легкий",
+  medium: "Средний",
+  hard: "Сложный"
+} as const;
+
+export function LeaderboardTable({ entries }: LeaderboardTableProps) {
+  return (
+    <section className="rounded-2xl border border-white/15 bg-white/5 p-4">
+      <h3 className="text-lg font-semibold text-white">Таблица лидеров</h3>
+      {entries.length === 0 ? (
+        <p className="mt-2 text-sm text-white/65">Пока нет результатов. Будь первым в рейтинге.</p>
+      ) : (
+        <div className="mt-3 space-y-2">
+          {entries.map((entry, index) => (
+            <div key={entry.id} className="grid grid-cols-[36px_1fr_auto_auto] items-center gap-2 rounded-lg bg-black/20 px-3 py-2">
+              <span className="text-sm text-cyan-200">#{index + 1}</span>
+              <span className="truncate text-sm text-white/90">{entry.name}</span>
+              <span className="text-xs text-white/70">{difficultyLabel[entry.difficulty]}</span>
+              <span className="text-sm font-medium text-emerald-300">{entry.score}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}

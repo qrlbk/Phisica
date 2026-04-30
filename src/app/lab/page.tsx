@@ -5,7 +5,7 @@ export default function LabPage() {
   return (
     <AppShell
       title="Виртуальная лаборатория"
-      description="Меняй параметры экспериментов и наблюдай результат в режиме реального времени."
+      description="4 интерактивных эксперимента, формульные подсказки, сравнение сценариев и игровые миссии."
     >
       <ExperimentTabs />
     </AppShell>
