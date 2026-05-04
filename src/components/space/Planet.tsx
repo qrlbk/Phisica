@@ -1,10 +1,11 @@
 "use client";
 
 import { useRef } from "react";
-import { Group, Mesh } from "three";
+import { DoubleSide, Group, Mesh } from "three";
 import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import { PlanetInfo } from "@/data/planets";
+import { ProceduralPlanetMaterial } from "./ProceduralPlanetMaterial";
 
 type PlanetProps = {
   planet: PlanetInfo;
@@ -35,18 +36,28 @@ export function Planet({ planet, onSelect, timeScale, sunMassScale, distanceScal
   return (
     <group ref={groupRef}>
       <mesh ref={meshRef} onClick={() => onSelect(planet)}>
-        <sphereGeometry args={[planet.size, 32, 32]} />
-        <meshStandardMaterial color={planet.color} roughness={0.65} metalness={0.15} emissive={planet.color} emissiveIntensity={0.1} />
+        <sphereGeometry args={[planet.size, 72, 72]} />
+        <ProceduralPlanetMaterial planetId={planet.id} baseColorHex={planet.color} />
       </mesh>
       {planet.hasRings ? (
         <mesh rotation={[-Math.PI / 2.3, 0, 0]} onClick={() => onSelect(planet)}>
-          <ringGeometry args={[planet.size * 1.35, planet.size * 2, 64]} />
-          <meshStandardMaterial color="#dfc999" transparent opacity={0.72} roughness={0.9} metalness={0.05} side={2} />
+          <ringGeometry args={[planet.size * 1.35, planet.size * 2.05, 128]} />
+          <meshStandardMaterial
+            color="#c9a66c"
+            emissive="#4a3820"
+            emissiveIntensity={0.08}
+            transparent
+            opacity={0.78}
+            roughness={0.88}
+            metalness={0.12}
+            side={DoubleSide}
+            depthWrite={false}
+          />
         </mesh>
       ) : null}
       <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[planet.size * 1.08, 24, 24]} />
-        <meshBasicMaterial color={planet.color} transparent opacity={0.08} />
+        <sphereGeometry args={[planet.size * 1.06, 32, 32]} />
+        <meshBasicMaterial color={planet.color} transparent opacity={0.06} depthWrite={false} />
       </mesh>
       <Html position={[0, planet.size + 0.2, 0]} center zIndexRange={[0, 0]} style={{ pointerEvents: "none" }}>
         <span className="rounded bg-black/60 px-2 py-0.5 text-xs text-white/80">{planet.name}</span>

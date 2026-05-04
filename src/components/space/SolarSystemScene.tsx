@@ -3,8 +3,8 @@
 import { useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { AdditiveBlending } from "three";
 import { Planet } from "./Planet";
+import { SunBody } from "./SunBody";
 import { type PlanetInfo } from "@/data/planets";
 
 type SolarSystemSceneProps = {
@@ -66,19 +66,12 @@ export function SolarSystemScene({
     <div className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-white/15 bg-[#030712]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.15),transparent_40%),radial-gradient(circle_at_85%_15%,rgba(168,85,247,0.18),transparent_35%)]" />
       <Canvas camera={{ position: cameraPosition as [number, number, number], fov: 55 }}>
-        <ambientLight intensity={0.6} />
-        <pointLight position={[0, 0, 0]} intensity={120} color="#fbbf24" />
-        <pointLight position={[0, 0, 0]} intensity={20} color="#fdba74" />
+        <ambientLight intensity={0.22} />
+        <pointLight position={[0, 0, 0]} intensity={95} color="#fff1c8" distance={80} decay={1.5} />
+        <pointLight position={[0, 0, 0]} intensity={28} color="#ffb454" distance={45} decay={2} />
         <StarDots />
 
-        <mesh>
-          <sphereGeometry args={[0.9, 48, 48]} />
-          <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={1.6} />
-        </mesh>
-        <mesh>
-          <sphereGeometry args={[1.2, 32, 32]} />
-          <meshBasicMaterial color="#f59e0b" transparent opacity={0.14} blending={AdditiveBlending} />
-        </mesh>
+        <SunBody />
 
         {planets.map((planet) => (
           <group key={`orbit-${planet.id}`}>
