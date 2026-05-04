@@ -3,6 +3,7 @@
 import { GlassCard } from "@/components/ui/GlassCard";
 import { QuizDifficulty } from "@/data/qa";
 import { LeaderboardEntry } from "@/lib/quiz/leaderboard";
+import type { AchievementId } from "@/lib/quiz/questAchievements";
 import { LeaderboardTable } from "@/components/qa/LeaderboardTable";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
@@ -14,6 +15,9 @@ type ResultCardProps = {
   playerName: string;
   isSaved: boolean;
   leaderboard: LeaderboardEntry[];
+  justOpenedMedium?: boolean;
+  justOpenedHard?: boolean;
+  newAchievements?: AchievementId[];
   onPlayerNameChange: (value: string) => void;
   onSaveResult: () => void;
   onRestart: () => void;
@@ -28,6 +32,9 @@ export function ResultCard({
   playerName,
   isSaved,
   leaderboard,
+  justOpenedMedium = false,
+  justOpenedHard = false,
+  newAchievements = [],
   onPlayerNameChange,
   onSaveResult,
   onRestart,
@@ -59,6 +66,26 @@ export function ResultCard({
     <div className="space-y-4">
       <GlassCard>
         <h3 className="text-2xl font-semibold text-white">{t("qa.result.title")}</h3>
+        {justOpenedMedium ? (
+          <p className="mt-3 rounded-lg border border-emerald-400/40 bg-emerald-500/15 px-3 py-2 text-sm text-emerald-100">
+            {t("qa.result.banner.mediumUnlocked")}
+          </p>
+        ) : null}
+        {justOpenedHard ? (
+          <p className="mt-3 rounded-lg border border-violet-400/40 bg-violet-500/15 px-3 py-2 text-sm text-violet-100">
+            {t("qa.result.banner.hardUnlocked")}
+          </p>
+        ) : null}
+        {newAchievements.length > 0 ? (
+          <div className="mt-3 rounded-lg border border-amber-300/35 bg-amber-500/10 px-3 py-2 text-sm text-amber-50">
+            <p className="font-medium text-amber-100">{t("qa.result.newAchievementsTitle")}</p>
+            <ul className="mt-1 list-inside list-disc text-amber-50/95">
+              {newAchievements.map((id) => (
+                <li key={id}>{t(`qa.achievement.${id}`)}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         <p className="mt-2 text-sm text-white/80">
           {t("qa.result.scorePrefix")}: <span className="text-cyan-200">{score}</span> {t("qa.result.points")} {totalQuestions}{" "}
           {t("qa.result.questionsSuffix")}.

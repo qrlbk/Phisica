@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { AnswerOptions } from "@/components/qa/AnswerOptions";
 import { QuizHeader } from "@/components/qa/QuizHeader";
+import { QuestStageStrip } from "@/components/qa/QuestStageStrip";
 import { ResultCard } from "@/components/qa/ResultCard";
 import { getQuizQuestions, type QuizDifficulty } from "@/data/qa";
 import { getScoreDelta } from "@/lib/quiz/scoring";
@@ -14,6 +15,12 @@ import {
   writeLeaderboard,
   type LeaderboardEntry
 } from "@/lib/quiz/leaderboard";
+import {
+  markDifficultyCleared,
+  readClearedDifficulties,
+  writeClearedDifficulties
+} from "@/lib/quiz/questProgress";
+import { unlockAchievementsAfterRun, type AchievementId } from "@/lib/quiz/questAchievements";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 type QuizGameProps = {
@@ -37,6 +44,12 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
   const [usedHint, setUsedHint] = useState(false);
   const [timeLeft, setTimeLeft] = useState(getTimerByDifficulty(difficulty));
   const [isFinished, setIsFinished] = useState(false);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [finishMeta, setFinishMeta] = useState<{
+    justOpenedMedium: boolean;
+    justOpenedHard: boolean;
+    newAchievements: AchievementId[];
+  } | null>(null);
   const [playerName, setPlayerName] = useState("Player");
   const [isSaved, setIsSaved] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(() => readLeaderboard());
@@ -75,6 +88,9 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
     const delta = getScoreDelta({ isCorrect, streakBefore: streak, usedHint });
     const nextStreak = isCorrect ? streak + 1 : 0;
 
+    if (isCorrect) {
+      setCorrectCount((c) => c + 1);
+    }
     setScore((prev) => prev + delta);
     setStreak(nextStreak);
     setBestStreak((prev) => Math.max(prev, nextStreak));
@@ -93,6 +109,21 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
     }
 
     if (currentQuestionIndex === questions.length - 1) {
+      const clearedBefore = readClearedDifficulties();
+      const { nextCleared, justOpenedMedium, justOpenedHard } = markDifficultyCleared(clearedBefore, difficulty);
+      writeClearedDifficulties(nextCleared);
+      const { newlyUnlocked } = unlockAchievementsAfterRun({
+        difficulty,
+        bestStreak,
+        correctCount,
+        totalQuestions: questions.length,
+        clearedBefore
+      });
+      setFinishMeta({
+        justOpenedMedium,
+        justOpenedHard,
+        newAchievements: newlyUnlocked
+      });
       setIsFinished(true);
       return;
     }
@@ -109,11 +140,13 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
     setScore(0);
     setStreak(0);
     setBestStreak(0);
+    setCorrectCount(0);
     setSelectedOption(null);
     setAnswered(false);
     setUsedHint(false);
     setTimeLeft(getTimerByDifficulty(difficulty));
     setIsFinished(false);
+    setFinishMeta(null);
     setIsSaved(false);
   };
 
@@ -135,6 +168,11 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
   };
 
   if (isFinished) {
+    const meta = finishMeta ?? {
+      justOpenedMedium: false,
+      justOpenedHard: false,
+      newAchievements: [] as AchievementId[]
+    };
     return (
       <ResultCard
         score={score}
@@ -144,6 +182,9 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
         playerName={playerName}
         isSaved={isSaved}
         leaderboard={leaderboard}
+        justOpenedMedium={meta.justOpenedMedium}
+        justOpenedHard={meta.justOpenedHard}
+        newAchievements={meta.newAchievements}
         onPlayerNameChange={setPlayerName}
         onSaveResult={handleSaveResult}
         onRestart={handleRestart}
@@ -156,6 +197,7 @@ export function QuizGame({ difficulty, onChangeDifficulty }: QuizGameProps) {
 
   return (
     <section>
+      <QuestStageStrip currentIndex={currentQuestionIndex} />
       <QuizHeader
         score={score}
         streak={streak}
